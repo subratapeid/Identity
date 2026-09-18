@@ -1,0 +1,15 @@
+{
+    "name": "pagelyne/identity",
+    "display_name": "Pagelyne Identity",
+    "version": "1.0.0",
+    "type": "laravel-plugin",
+
+    "requirements": {
+        "php": ">=8.4",
+        "laravel": "^13.0"
+    },
+
+    "dependencies": {
+        "spatie/laravel-permission": "^7.0"
+    }
+}
