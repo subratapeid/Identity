@@ -1,6 +1,6 @@
 <?php
 
-namespace Identity\Models\Concerns;
+namespace Pagelyne\Identity\Models\Concerns;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;

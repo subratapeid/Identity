@@ -1,8 +1,8 @@
 <?php
 
-namespace Identity\Models;
+namespace Pagelyne\Identity\Models;
 
-use Identity\Models\Concerns\HasUuid;
+use Pagelyne\Identity\Models\Concerns\HasUuid;
 use Identity\Database\Factories\UserFactory;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;

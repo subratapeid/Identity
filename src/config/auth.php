@@ -1,6 +1,6 @@
 <?php
 
-use Identity\Models\User;
+use Pagelyne\Identity\Models\User;
 
 return [
 
@@ -64,7 +64,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', User::class),
+            'model' => User::class,
         ],
 
         // 'users' => [

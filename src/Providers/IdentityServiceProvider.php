@@ -12,6 +12,7 @@ class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+
         $configPath = __DIR__ . '/../Config';
 
         if (!is_dir($configPath)) {
@@ -42,6 +43,16 @@ class IdentityServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        /*
+        |--------------------------------------------------------------------------
+        | Identity Authentication
+        |--------------------------------------------------------------------------
+        */
+
+        config([
+            'auth' => require __DIR__ . '/../Config/auth.php',
+        ]);
+
         /*
         |--------------------------------------------------------------------------
         | Migrations
