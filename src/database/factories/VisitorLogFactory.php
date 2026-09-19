@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Factories;
+namespace Pagelyne\Identity\Database\Factories;
 
-use App\Models\VisitorLog;
+use Pagelyne\Identity\Models\VisitorLog;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 

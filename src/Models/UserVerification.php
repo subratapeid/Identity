@@ -1,6 +1,6 @@
 <?php
 
-namespace Identity\Models;
+namespace Pagelyne\Identity\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

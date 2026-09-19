@@ -1,13 +1,18 @@
 <?php
 
-namespace Identity\Services\Auth;
+namespace Pagelyne\Identity\Services\Auth;
 
-use Identity\Models\User;
-use Identity\Models\UserSecurity;
+use Illuminate\Support\Facades\Auth;
+use Pagelyne\Identity\Models\User;
+use Pagelyne\Identity\Models\UserSecurity;
 use Illuminate\Support\Facades\Hash;
 
 class LoginService
 {
+    public function check(): bool
+    {
+        return Auth::guard('web')->check();
+    }
     /**
      * Find user by username, email or phone.
      *
@@ -40,7 +45,8 @@ class LoginService
      */
     public function authenticate(
         string $username,
-        string $password
+        string $password,
+        bool $remember = false
     ): array {
 
         $user = $this->findUser($username);
@@ -191,11 +197,16 @@ class LoginService
             ];
         }
 
+
         /*
         |--------------------------------------------------------------------------
         | Authentication Successful
         |--------------------------------------------------------------------------
         */
+
+        Auth::guard('web')->login($user, $remember);
+
+        $this->updateLastLogin($user);
 
         return [
             'success' => true,
@@ -242,22 +253,22 @@ class LoginService
         return match ($user->status) {
 
             'inactive' =>
-            'Your account is inactive.',
+                'Your account is inactive.',
 
             'pending' =>
-            'Your account is pending activation.',
+                'Your account is pending activation.',
 
             'blocked' =>
-            'Your account has been blocked.',
+                'Your account has been blocked.',
 
             'suspended' =>
-            'Your account has been suspended.',
+                'Your account has been suspended.',
 
             'locked' =>
-            'Your account has been locked.',
+                'Your account has been locked.',
 
             default =>
-            'Unable to login.',
+                'Unable to login.',
         };
     }
 

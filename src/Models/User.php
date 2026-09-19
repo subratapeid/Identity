@@ -3,7 +3,7 @@
 namespace Pagelyne\Identity\Models;
 
 use Pagelyne\Identity\Models\Concerns\HasUuid;
-use Identity\Database\Factories\UserFactory;
+use Pagelyne\Identity\Database\Factories\UserFactory;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;

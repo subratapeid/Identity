@@ -1,8 +1,8 @@
 <?php
 
-namespace Identity\Database\Factories;
+namespace Pagelyne\Identity\Database\Factories;
 
-use Identity\Models\User;
+use Pagelyne\Identity\Models\User;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
