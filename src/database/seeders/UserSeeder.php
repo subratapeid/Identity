@@ -1,12 +1,13 @@
 <?php
 
-namespace Identity\Database\Seeders;
+namespace Pagelyne\Identity\Database\Seeders;
 
-use Core\Services\DataEncryptionService;
+
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Pagelyne\Identity\Services\DataEncryptionService;
 
 class UserSeeder extends Seeder
 {

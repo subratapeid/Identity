@@ -1,6 +1,6 @@
 <?php
 
-namespace Identity\Database\Seeders;
+namespace Pagelyne\Identity\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,6 @@ class IdentityDatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-
 
         ]);
     }
