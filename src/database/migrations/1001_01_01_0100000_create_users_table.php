@@ -114,7 +114,7 @@ return new class extends Migration {
                 ->default('active')
                 ->index();
 
-            
+
             /*
             |--------------------------------------------------------------------------
             | Authentication Activity
