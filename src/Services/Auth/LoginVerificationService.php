@@ -1,11 +1,11 @@
 <?php
 
-namespace Identity\Services\Auth;
+namespace Pagelyne\Identity\Services\Auth;
 
 use Core\Services\DataEncryptionService;
-use Identity\Mail\Auth\LoginOtpMail;
-use Identity\Models\User;
-use Identity\Models\UserVerification;
+use Pagelyne\Identity\Mail\Auth\LoginOtpMail;
+use Pagelyne\Identity\Models\User;
+use Pagelyne\Identity\Models\UserVerification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
