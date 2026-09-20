@@ -4,15 +4,29 @@ declare(strict_types=1);
 
 namespace Pagelyne\Identity\Providers;
 
+use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\ServiceProvider;
+use Pagelyne\Identity\Http\Middleware\Authenticate;
 
 class IdentityServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->registerConfigs();
+    }
 
+    public function boot(): void
+    {
+        $this->registerMigrations();
+        $this->registerViews();
+        $this->registerComponents();
+        $this->registerMiddleware();
+    }
+
+    protected function registerConfigs(): void
+    {
         $configPath = __DIR__ . '/../Config';
 
         if (!is_dir($configPath)) {
@@ -24,6 +38,14 @@ class IdentityServiceProvider extends ServiceProvider
                 $file->getFilename(),
                 PATHINFO_FILENAME
             );
+
+            if ($name === 'auth') {
+                $this->mergeConfigFrom(
+                    $file->getRealPath(),
+                    'auth'
+                );
+                continue;
+            }
 
             if ($name === 'permission') {
                 $this->mergeConfigFrom(
@@ -41,56 +63,48 @@ class IdentityServiceProvider extends ServiceProvider
         }
     }
 
-    public function boot(): void
+    protected function registerMigrations(): void
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Identity Authentication
-        |--------------------------------------------------------------------------
-        */
-
-        config([
-            'auth' => require __DIR__ . '/../Config/auth.php',
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Migrations
-        |--------------------------------------------------------------------------
-        */
-
         $this->loadMigrationsFrom(
             __DIR__ . '/../Database/Migrations'
         );
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Views
-        |--------------------------------------------------------------------------
-        */
-
+    protected function registerViews(): void
+    {
         $viewsPath = __DIR__ . '/../Resources/Views';
 
-        if (is_dir($viewsPath)) {
-            $this->loadViewsFrom(
-                $viewsPath,
-                'identity'
-            );
+        if (!is_dir($viewsPath)) {
+            return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Anonymous Blade Components
-        |--------------------------------------------------------------------------
-        */
+        $this->loadViewsFrom(
+            $viewsPath,
+            'identity'
+        );
+    }
 
-        $componentsPath = $viewsPath . '/components';
+    protected function registerComponents(): void
+    {
+        $componentsPath = __DIR__ . '/../Resources/Views/components';
 
-        if (is_dir($componentsPath)) {
-            Blade::anonymousComponentPath(
-                $componentsPath,
-                'identity'
-            );
+        if (!is_dir($componentsPath)) {
+            return;
         }
+
+        Blade::anonymousComponentPath(
+            $componentsPath,
+            'identity'
+        );
+    }
+
+    protected function registerMiddleware(): void
+    {
+        $this->app
+            ->make(Router::class)
+            ->aliasMiddleware(
+                'identity.auth',
+                Authenticate::class
+            );
     }
 }

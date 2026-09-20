@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginService
 {
-    public function check(): bool
+    public function check(string $guard = 'web'): bool
     {
-        return Auth::guard('web')->check();
+        return Auth::guard($guard)->check();
     }
     /**
      * Find user by username, email or phone.
@@ -482,7 +482,7 @@ class LoginService
     {
         return [
             'success' => false,
-            'message' => 'Invalid username, email/phone or password.',
+            'message' => 'Invalid username or password.',
         ];
     }
 

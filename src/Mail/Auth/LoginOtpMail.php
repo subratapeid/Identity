@@ -1,8 +1,8 @@
 <?php
 
-namespace Identity\Mail\Auth;
+namespace Pagelyne\Identity\Mail\Auth;
 
-use Identity\Models\User;
+use Pagelyne\Identity\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;

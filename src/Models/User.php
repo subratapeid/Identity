@@ -116,7 +116,7 @@ class User extends Authenticatable
 
     public function loginOtps()
     {
-        return $this->hasMany(UserLoginOtp::class);
+        return $this->hasMany(UserVerification::class);
     }
 
     public function loginAttempts()

@@ -1,15 +1,16 @@
 <?php
 
-namespace Identity\Services\Auth;
+namespace Pagelyne\Identity\Services\Auth;
 
-use Identity\Mail\Auth\LoginOtpMail;
-use Identity\Models\User;
-use Identity\Models\UserLoginOtp;
+use Pagelyne\Identity\Mail\Auth\LoginOtpMail;
+use Pagelyne\Identity\Models\User;
+// use Pagelyne\Identity\Models\UserLoginOtp;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Pagelyne\Identity\Models\UserVerification;
 
 class LoginOtpService
 {
@@ -21,7 +22,7 @@ class LoginOtpService
     /**
      * Generate & Send OTP.
      */
-    public function generate(User $user, Request $request): UserLoginOtp
+    public function generate(User $user, Request $request): UserVerification
     {
         // Remove previous unused OTPs
         $user->loginOtps()
@@ -32,11 +33,13 @@ class LoginOtpService
         $otp = random_int(100000, 999999);
 
         // Save OTP
-        $loginOtp = UserLoginOtp::create([
+        $loginOtp = UserVerification::create([
             'uuid' => Str::uuid(),
             'user_id' => $user->id,
             'otp_hash' => Hash::make($otp),
+            'type' => 'email',
             'expires_at' => now()->addMinutes($this->expiryMinutes),
+            'sent_at' => now(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
         ]);
@@ -50,13 +53,18 @@ class LoginOtpService
     /**
      * Verify OTP.
      */
-    public function verify(UserLoginOtp $loginOtp, string $otp): bool
+    public function verify(UserVerification $loginOtp, string $otp): bool
     {
         if ($loginOtp->verified_at) {
             return false;
         }
 
         if ($loginOtp->expires_at->isPast()) {
+
+            $loginOtp->update([
+                'status' => 'expired',
+            ]);
+
             return false;
         }
 
@@ -64,13 +72,19 @@ class LoginOtpService
             return false;
         }
 
-        // $loginOtp->increment('attempts');
+        $loginOtp->increment('attempts');
 
         if (!Hash::check($otp, $loginOtp->otp_hash)) {
+
+            $loginOtp->update([
+                'status' => 'failed',
+            ]);
+
             return false;
         }
 
         $loginOtp->update([
+            'status' => 'verified',
             'verified_at' => now(),
         ]);
 
@@ -80,9 +94,9 @@ class LoginOtpService
     /**
      * Find OTP by UUID.
      */
-    public function find(string $uuid): ?UserLoginOtp
+    public function find(string $uuid): ?UserVerification
     {
-        return UserLoginOtp::with('user')
+        return UserVerification::with('user')
             ->where('uuid', $uuid)
             ->first();
     }
@@ -90,7 +104,7 @@ class LoginOtpService
     /**
      * Resend OTP.
      */
-    public function resend(UserLoginOtp $loginOtp, Request $request): UserLoginOtp
+    public function resend(UserVerification $loginOtp, Request $request): UserVerification
     {
         $loginOtp->delete();
 
