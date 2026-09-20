@@ -1,15 +1,18 @@
 <?php
 
-namespace Pagelyne\Identity\Models;
+declare(strict_types=1);
 
-use Pagelyne\Identity\Models\Concerns\HasUuid;
-use Pagelyne\Identity\Database\Factories\UserFactory;
+namespace Pagelyne\Identity\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Pagelyne\Identity\Database\Factories\UserFactory;
+use Pagelyne\Identity\Models\Concerns\HasUuid;
+use Pagelyne\Identity\Services\DataEncryptionService;
 
 #[Fillable([
     'uuid',
@@ -29,14 +32,12 @@ use Illuminate\Notifications\Notifiable;
     'created_by',
     'updated_by',
 ])]
-
 #[Hidden([
     'password',
     'remember_token',
 ])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory;
     use Notifiable;
     use HasUuid;
@@ -45,6 +46,7 @@ class User extends Authenticatable
     {
         return UserFactory::new();
     }
+
     protected function casts(): array
     {
         return [
@@ -60,11 +62,52 @@ class User extends Authenticatable
         ];
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
+    protected function email(): Attribute
+    {
+        return Attribute::make(
+            get: function (): ?string {
+
+                $value = $this->getRawOriginal('email_encrypted');
+
+                if ($value === null || $value === '') {
+                    return $value;
+                }
+
+                return app(DataEncryptionService::class)
+                    ->decrypt($value);
+            },
+
+            set: function (?string $value): ?string {
+                if ($value === null || $value === '') {
+                    return $value;
+                }
+
+                return app(DataEncryptionService::class)
+                    ->encrypt($value);
+            },
+        );
+    }
+
+    protected function phone(): Attribute
+    {
+        return Attribute::make(
+            get: function ($value, array $attributes): ?string {
+                $value = $attributes['phone_encrypted'] ?? null;
+
+                if ($value === null || $value === '') {
+                    return $value;
+                }
+
+                return app(DataEncryptionService::class)->decrypt($value);
+            },
+
+            set: function (?string $value): void {
+                $this->attributes['phone_encrypted'] = $value === null || $value === ''
+                    ? $value
+                    : app(DataEncryptionService::class)->encrypt($value);
+            },
+        );
+    }
 
     public function profile()
     {
