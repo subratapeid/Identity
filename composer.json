@@ -1,6 +1,5 @@
 {
     "name": "pagelyne/identity",
-    "version": "1.0.0",
     "description": "Pagelyne Identity Laravel Plugin",
     "type": "library",
     "license": "MIT",
