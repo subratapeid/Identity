@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Hash;
 
 class LoginService
 {
+    /**
+     * Login an already authenticated/verified Identity user.
+     *
+     * This is useful for OTP authentication and other
+     * authentication flows where the user has already
+     * been verified.
+     */
+    public function login(
+        User $user,
+        string $guard = 'web',
+        bool $remember = false
+    ): void {
+        Auth::guard($guard)->login($user, $remember);
+
+        $this->updateLastLogin($user);
+    }
+
+
     public function check(string $guard = 'web'): bool
     {
         return Auth::guard($guard)->check();

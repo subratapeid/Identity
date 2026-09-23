@@ -16,12 +16,14 @@ use Pagelyne\Identity\Services\DataEncryptionService;
 
 #[Fillable([
     'uuid',
-    'name',
-    'email',
-    'mobile',
+    'username',
+    'email_hash',
+    'email_encrypted',
+    'phone_hash',
+    'phone_encrypted',
     'password',
     'email_verified_at',
-    'mobile_verified_at',
+    'phone_verified_at',
     'two_factor_enabled',
     'status',
     'last_login_at',
@@ -51,7 +53,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'mobile_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
             'password_changed_at' => 'datetime',
             'locked_until' => 'datetime',
@@ -82,8 +84,10 @@ class User extends Authenticatable
                     return $value;
                 }
 
-                return app(DataEncryptionService::class)
+                $decrypted = app(DataEncryptionService::class)
                     ->encrypt($value);
+
+                return $decrypted;
             },
         );
     }
