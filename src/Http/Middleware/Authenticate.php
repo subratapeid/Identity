@@ -15,7 +15,6 @@ class Authenticate
         Closure $next,
         string $context
     ): Response {
-        
         $config = config("identity.contexts.{$context}");
 
         abort_unless(
@@ -39,16 +38,25 @@ class Authenticate
             "Identity login route is not configured for context [{$context}]."
         );
 
-        if (!config("auth.guards.{$guard}")) {
-            abort(
-                500,
-                "Identity guard [{$guard}] is not configured in auth.guards."
-            );
-        }
+        abort_unless(
+            array_key_exists($guard, config('auth.guards', [])),
+            500,
+            "Identity guard [{$guard}] is not configured in auth.guards."
+        );
 
-        if (!auth()->guard($guard)->check()) {
+        $request->attributes->set('identity.context', $context);
+        $request->attributes->set('identity.guard', $guard);
+
+        $auth = auth()->guard($guard);
+
+        if (!$auth->check()) {
             return redirect()->route($loginRoute);
         }
+
+        $request->attributes->set(
+            'identity.user',
+            $auth->user()
+        );
 
         return $next($request);
     }
